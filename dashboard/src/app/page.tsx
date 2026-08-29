@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { ModelCards } from "@/components/ModelCards";
@@ -26,7 +26,7 @@ const MODEL_DATA = {
     correlation: 0.808,
     params: "654K",
     inference: "1.1ms",
-    bestFor: "Best accuracy, spatial feature extraction",
+    bestFor: "Spatial feature extraction",
   },
   autoencoder: {
     name: "Autoencoder",
@@ -35,7 +35,7 @@ const MODEL_DATA = {
     correlation: 0.461,
     params: "145K",
     inference: "0.8ms",
-    bestFor: "Low memory footprint, edge deployment",
+    bestFor: "Low memory, edge deployment",
   },
   vit: {
     name: "OceanEmbed",
@@ -44,7 +44,7 @@ const MODEL_DATA = {
     correlation: 0.34,
     params: "943K",
     inference: "2.3ms",
-    bestFor: "Research baseline, attention visualization",
+    bestFor: "Attention visualization",
   },
   shallow: {
     name: "Shallow CNN",
@@ -53,26 +53,26 @@ const MODEL_DATA = {
     correlation: 0.422,
     params: "8K",
     inference: "0.1ms",
-    bestFor: "Minimal compute, learning baseline",
+    bestFor: "Minimal compute baseline",
   },
 };
 
 const DEPTH_DATA = [
-  { depth: 2, rmse: 0.608, corr: 0.947 },
-  { depth: 5, rmse: 0.611, corr: 0.947 },
-  { depth: 10, rmse: 0.603, corr: 0.948 },
-  { depth: 20, rmse: 0.617, corr: 0.947 },
-  { depth: 30, rmse: 0.652, corr: 0.943 },
-  { depth: 50, rmse: 0.732, corr: 0.934 },
-  { depth: 75, rmse: 0.828, corr: 0.922 },
-  { depth: 100, rmse: 0.933, corr: 0.907 },
-  { depth: 125, rmse: 1.052, corr: 0.89 },
-  { depth: 150, rmse: 1.187, corr: 0.871 },
-  { depth: 200, rmse: 1.488, corr: 0.825 },
-  { depth: 300, rmse: 1.965, corr: 0.748 },
-  { depth: 500, rmse: 2.561, corr: 0.633 },
-  { depth: 700, rmse: 2.695, corr: 0.596 },
-  { depth: 1000, rmse: 2.734, corr: 0.585 },
+  { depth: 2, rmse: 0.511, corr: 0.782 },
+  { depth: 5, rmse: 0.544, corr: 0.770 },
+  { depth: 10, rmse: 0.584, corr: 0.778 },
+  { depth: 20, rmse: 0.632, corr: 0.798 },
+  { depth: 30, rmse: 0.720, corr: 0.621 },
+  { depth: 50, rmse: 0.704, corr: 0.644 },
+  { depth: 75, rmse: 0.634, corr: 0.557 },
+  { depth: 100, rmse: 0.806, corr: 0.647 },
+  { depth: 125, rmse: 0.785, corr: 0.574 },
+  { depth: 150, rmse: 0.848, corr: 0.703 },
+  { depth: 200, rmse: 0.739, corr: 0.808 },
+  { depth: 300, rmse: 0.661, corr: 0.889 },
+  { depth: 500, rmse: 0.705, corr: 0.908 },
+  { depth: 700, rmse: 0.693, corr: 0.906 },
+  { depth: 1000, rmse: 0.943, corr: 0.883 },
 ];
 
 export default function Home() {

@@ -1,73 +1,184 @@
 "use client";
 
+import { motion } from "framer-motion";
+
+const STATS = [
+  { label: "Region", value: "North Indian Ocean" },
+  { label: "Depths", value: "15 (2 - 1000m)" },
+  { label: "Resolution", value: "0.25\u00b0 Daily" },
+  { label: "Best RMSE", value: "0.511 \u00b0C" },
+];
+
 export function Hero() {
   return (
-    <section className="border-b border-slate-200 bg-white">
-      <div className="mx-auto max-w-6xl px-6 py-20 lg:px-8 lg:py-28">
-        <div className="max-w-2xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            MoES / INCOIS Hackathon
-          </div>
+    <section className="relative overflow-hidden pt-28 pb-20 lg:pt-36 lg:pb-28">
+      {/* Ambient background orb */}
+      <div className="pointer-events-none absolute top-1/4 right-0 h-[500px] w-[500px] rounded-full bg-ocean-100/40 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-[400px] w-[400px] rounded-full bg-deep-100/30 blur-[100px]" />
 
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            Reconstructing subsurface ocean temperature from satellite
-            observations
-          </h1>
-
-          <p className="mt-5 text-lg leading-relaxed text-slate-500">
-            A deep learning framework that predicts temperature profiles at 15
-            depths across the North Indian Ocean using only surface satellite
-            data. 0.25° daily resolution.
-          </p>
-
-          <div className="mt-8 flex items-center gap-3">
-            <a
-              href="#models"
-              className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-slate-800 active:scale-[0.98]"
+      <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="grid items-start gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
+          {/* Left: Content */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              View Results
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-sand-200 bg-sand-100/60 px-3 py-1 text-xs font-medium tracking-wide text-sand-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-ocean-500" />
+                MoES / INCOIS Hackathon
+              </div>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="text-4xl font-semibold tracking-tight text-sand-900 md:text-5xl lg:text-[3.4rem] lg:leading-[1.08]"
+            >
+              Reconstructing subsurface
+              <br className="hidden md:block" /> ocean temperature from
+              <br className="hidden md:block" /> satellite observations
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-5 max-w-lg text-lg leading-relaxed text-sand-500"
+            >
+              A deep learning framework that predicts temperature profiles at 15
+              depths across the North Indian Ocean using only surface satellite
+              data.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-8 flex flex-wrap items-center gap-3"
+            >
+              <a
+                href="#models"
+                className="group inline-flex items-center gap-2.5 rounded-full bg-sand-800 px-6 py-2.5 text-sm font-medium text-sand-50 transition-all duration-200 hover:bg-sand-700 active:scale-[0.98]"
               >
-                <path
-                  d="M7 3V11M7 11L3 7M7 11L11 7"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </a>
-            <a
-              href="#architecture"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98]"
-            >
-              Architecture
-            </a>
+                View Results
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  className="transition-transform duration-200 group-hover:translate-y-0.5"
+                >
+                  <path
+                    d="M6 2V10M6 10L2 6M6 10L10 6"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+              <a
+                href="#architecture"
+                className="inline-flex items-center gap-2 rounded-full border border-sand-200 bg-white/60 px-5 py-2.5 text-sm font-medium text-sand-600 backdrop-blur-sm transition-all duration-200 hover:border-sand-300 hover:bg-white active:scale-[0.98]"
+              >
+                Architecture
+              </a>
+            </motion.div>
           </div>
+
+          {/* Right: Visual / Stats */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative mt-4 lg:mt-0"
+          >
+            {/* Abstract ocean depth visualization */}
+            <div className="relative overflow-hidden rounded-3xl border border-sand-200/60 bg-gradient-to-br from-ocean-50 via-deep-50 to-sand-100 p-8 lg:p-10">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-ocean-100),_transparent_60%)] opacity-60" />
+
+              <div className="relative">
+                <div className="mb-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-ocean-600">
+                  Depth Profile Preview
+                </div>
+
+                {/* Stylized depth bars */}
+                <div className="space-y-2">
+                  {[2, 10, 30, 75, 150, 300, 500, 1000].map((depth, i) => {
+                    const widths = [88, 85, 78, 68, 55, 42, 35, 28];
+                    return (
+                      <motion.div
+                        key={depth}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          delay: 0.5 + i * 0.08,
+                          duration: 0.5,
+                          ease: [0.16, 1, 0.3, 1],
+                        }}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="w-10 text-right font-mono text-[11px] text-ocean-500/70">
+                          {depth}m
+                        </div>
+                        <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-white/60">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${widths[i]}%` }}
+                            transition={{
+                              delay: 0.7 + i * 0.08,
+                              duration: 0.8,
+                              ease: [0.16, 1, 0.3, 1],
+                            }}
+                            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-ocean-400 to-ocean-500"
+                          />
+                        </div>
+                        <div className="w-8 text-right font-mono text-[11px] font-medium text-sand-700">
+                          {["25.8", "25.6", "24.9", "20.1", "16.3", "11.2", "8.4", "4.1"][i]}°
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 flex items-center gap-4 border-t border-ocean-200/40 pt-4">
+                  <div className="text-[10px] font-medium text-sand-500">
+                    Simulated temperature at depth
+                  </div>
+                  <div className="flex-1" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-1.5 w-1.5 rounded-full bg-ocean-400" />
+                    <span className="text-[10px] font-medium text-sand-500">
+                      r = 0.94
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 md:grid-cols-4">
-          {[
-            { label: "Region", value: "North Indian Ocean" },
-            { label: "Depths", value: "15 (2–1000m)" },
-            { label: "Resolution", value: "0.25° Daily" },
-            { label: "Best RMSE", value: "0.701 °C" },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-white p-5">
-              <div className="text-xs font-medium uppercase tracking-wider text-slate-400">
+        {/* Stats bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-sand-200/60 bg-sand-200/40 md:grid-cols-4"
+        >
+          {STATS.map((stat) => (
+            <div key={stat.label} className="bg-sand-50/80 p-5 backdrop-blur-sm">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sand-400">
                 {stat.label}
               </div>
-              <div className="mt-1.5 text-lg font-semibold text-slate-900">
+              <div className="mt-1.5 font-mono text-lg font-semibold text-sand-800">
                 {stat.value}
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
