@@ -78,22 +78,22 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export function DepthProfile({ data }: DepthProfileProps) {
   return (
-    <section id="depth" className="py-20 lg:py-28">
+    <section id="depth" className="py-16 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-14 max-w-2xl"
+          className="mb-10 max-w-2xl sm:mb-14"
         >
           <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-ocean-600">
             Depth Analysis
           </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-sand-900 md:text-4xl">
+          <h2 className="text-2xl font-semibold tracking-tight text-sand-900 sm:text-3xl md:text-4xl">
             Performance across the water column
           </h2>
-          <p className="mt-3 text-base text-sand-500">
+          <p className="mt-3 text-sm text-sand-500 sm:text-base">
             Best model (Linear) evaluated at 15 standard ocean depths. RMSE
             increases with depth as surface signal weakens.
           </p>
@@ -105,7 +105,7 @@ export function DepthProfile({ data }: DepthProfileProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-8 overflow-hidden rounded-2xl border border-sand-200/60 bg-white/70 p-6 backdrop-blur-sm lg:p-8"
+          className="mb-8 overflow-hidden rounded-2xl border border-sand-200/60 bg-white/70 p-4 backdrop-blur-sm sm:p-6 lg:p-8"
         >
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-sm font-semibold text-sand-700">
@@ -123,8 +123,8 @@ export function DepthProfile({ data }: DepthProfileProps) {
             </div>
           </div>
 
-          <ResponsiveContainer width="100%" height={380}>
-            <ComposedChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
               <defs>
                 <linearGradient id="rmseGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#4da2a0" stopOpacity={0.3} />

@@ -43,22 +43,22 @@ const PIPELINE_STEPS = [
 
 export function Architecture() {
   return (
-    <section id="architecture" className="py-20 lg:py-28">
+    <section id="architecture" className="py-16 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-14 max-w-2xl"
+          className="mb-10 max-w-2xl sm:mb-14"
         >
           <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-ocean-600">
             System Design
           </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-sand-900 md:text-4xl">
+          <h2 className="text-2xl font-semibold tracking-tight text-sand-900 sm:text-3xl md:text-4xl">
             How it works
           </h2>
-          <p className="mt-3 text-base text-sand-500">
+          <p className="mt-3 text-sm text-sand-500 sm:text-base">
             Surface satellite observations are encoded into a latent
             representation, then decoded into a full-depth temperature profile.
           </p>
