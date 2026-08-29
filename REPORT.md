@@ -98,18 +98,36 @@ Surface Input (7×64×64)
 | **Autoencoder** | Conv encoder → bottleneck → MLP | 145,231 | Compressed repr. |
 | **ViT (OceanEmbed)** | Patch embed → Transformer → MLP | 943,000 | Our model |
 
+### 4.3 V1.1 Improvements
+The V1.1 training script adds:
+- **Gradient clipping** (max_norm=1.0) for training stability
+- **Learning rate warmup** (3 epochs) followed by cosine annealing
+- **Early stopping** (patience=15) to prevent overfitting
+- **Increased batch size** (32 vs 16) for better gradient estimates
+- **More augmentation** (3 random crops per day vs 2)
+
 ---
 
 ## 5. Training Setup
 
+### V1 (Original)
 - **Loss:** Mean Squared Error (MSE)
 - **Optimizer:** AdamW (lr=1e-3, weight_decay=1e-4)
 - **Scheduler:** CosineAnnealing
-- **Batch size:** 16 (ViT), 32 (baselines)
+- **Batch size:** 16
 - **Epochs:** 30
-- **Device:** CPU (RTX 4050 Laptop GPU, 6GB VRAM)
+- **Device:** CPU
+
+### V1.1 (Improved)
+- **Loss:** Mean Squared Error (MSE)
+- **Optimizer:** AdamW (lr=1e-3 → 1e-6, weight_decay=1e-4)
+- **Scheduler:** Warmup (3 epochs) + CosineAnnealing
+- **Gradient clipping:** max_norm=1.0
+- **Batch size:** 32
+- **Epochs:** 50 (early stopping at 33)
+- **Device:** CPU
 - **Data splits:** Temporal — months 1-9 (train), months 10-12 (val)
-- **Crops:** 2 random 64×64 patches per day
+- **Crops:** 3 random 64×64 patches per day
 
 ---
 
@@ -125,7 +143,32 @@ Surface Input (7×64×64)
 | **ViT** | 0.917 | 0.340 | 943K | **0.439** | 0.752 | 1.426 |
 | Shallow | 1.047 | 0.422 | 8K | 0.530 | 0.956 | 1.537 |
 
-### 6.2 Depth-Level Analysis
+### 6.2 V1.1 Training Results
+
+The V1.1 model achieved:
+- **Best epoch:** 18 (val_loss=0.663)
+- **Early stopping:** Epoch 33 (patience exceeded)
+- **Training time:** ~11 minutes (33 epochs × 20s/epoch)
+
+| Depth (m) | RMSE (°C) | Bias (°C) | Correlation |
+|-----------|-----------|-----------|-------------|
+| 2 | 0.455 | +0.072 | 0.851 |
+| 5 | 0.463 | +0.079 | 0.839 |
+| 10 | 0.522 | +0.138 | 0.837 |
+| 20 | 0.591 | +0.068 | 0.758 |
+| 30 | 0.745 | -0.197 | 0.462 |
+| 50 | 0.978 | -0.562 | -0.040 |
+| 75 | 0.763 | -0.213 | 0.116 |
+| 100 | 1.862 | +0.131 | -0.069 |
+| 125 | 1.595 | +0.035 | -0.057 |
+| 150 | 1.564 | +0.067 | 0.169 |
+| 200 | 1.497 | +0.251 | 0.293 |
+| 300 | 1.700 | +0.378 | 0.402 |
+| 500 | 2.266 | +0.521 | 0.428 |
+| 700 | 2.207 | +0.441 | 0.434 |
+| 1000 | 2.485 | +0.450 | 0.565 |
+
+### 6.3 Depth-Level Analysis
 
 **Surface (2-30m):**
 - All models perform well (RMSE 0.44-0.63°C)
@@ -143,7 +186,7 @@ Surface Input (7×64×64)
 - Deep temperatures are nearly uniform — linear interpolation suffices
 - Complex models overfit to noise in deep layers
 
-### 6.3 Key Findings
+### 6.4 Key Findings
 
 1. **Simpler can be better:** The Linear model (14.8M params) achieves the lowest average RMSE. This suggests the surface-to-depth mapping is primarily a regression problem that doesn't require spatial feature extraction.
 
@@ -154,6 +197,8 @@ Surface Input (7×64×64)
 4. **Deep water is hard:** Below 200m, models struggle because surface signals have weak coupling to deep temperatures. The linear model's advantage here suggests simple climatological interpolation is competitive.
 
 5. **7-channel input is powerful:** Adding SSH, SSS, currents, and winds to SST improves reconstruction significantly over SST-only approaches.
+
+6. **Training stability matters:** V1.1's gradient clipping and warmup prevented the training instability seen in V2's depth-weighted loss approach.
 
 ---
 
@@ -169,13 +214,28 @@ This dataset provides independent validation not contaminated by GLORYS reanalys
 
 ---
 
-## 8. Conclusions & Future Work
+## 8. Dashboard
+
+The interactive dashboard (`notebooks/dashboard_v2.html`) provides:
+
+- **Model comparison cards** with click-to-select functionality
+- **Depth profile charts** (RMSE & Correlation vs depth)
+- **Bar charts** for RMSE and Correlation comparison
+- **Zone analysis** (Surface, Thermocline, Deep)
+- **Complexity vs Performance scatter plot**
+- **Detailed metrics table** with all depth levels
+- **Premium dark glassmorphism design** with smooth animations
+
+---
+
+## 9. Conclusions & Future Work
 
 ### Conclusions
 - Ocean temperature reconstruction from satellite surface observations is feasible with <1°C RMSE in the upper 200m
 - Simple linear models are competitive for this task — the mapping is primarily a regression problem
 - CNNs excel at capturing spatial patterns needed for correlation
 - ViT-based architectures need modification to preserve spatial locality for this application
+- Training stability (gradient clipping, warmup) is critical for deep models
 
 ### Future Work
 1. **Architecture improvements:** Add skip connections, use U-Net style encoder-decoder for ViT
@@ -188,14 +248,17 @@ This dataset provides independent validation not contaminated by GLORYS reanalys
 
 ---
 
-## 9. Repository Structure
+## 10. Repository Structure
 
 ```
 Ps66/
 ├── scripts/
-│   ├── model.py              # OceanEmbed ViT model (943K params)
+│   ├── model.py              # OceanEmbed ViT model (V1, 943K params)
+│   ├── model_v2.py           # Improved model with depth embedding
 │   ├── baselines.py          # Linear, CNN, Autoencoder, Shallow baselines
-│   ├── train.py              # ViT training script
+│   ├── train.py              # ViT training script (V1)
+│   ├── train_v1_1.py         # Improved training with grad clip + warmup
+│   ├── train_v2.py           # V2 training with depth-weighted loss
 │   ├── train_baselines.py    # Baseline comparison training
 │   ├── preprocess_glorys.py  # GLORYS preprocessing
 │   ├── preprocess_surface.py # Satellite surface preprocessing
@@ -207,13 +270,24 @@ Ps66/
 │   └── processed/            # Preprocessed datasets
 ├── models/                   # Trained model checkpoints
 ├── logs/                     # Training metrics, comparison results
-└── notebooks/                # Plots, dashboard, demo outputs
-    └── dashboard.html        # Interactive visualization dashboard
+├── notebooks/
+│   ├── plots/
+│   │   ├── comparison/       # Model comparison plots
+│   │   ├── evaluation/       # Evaluation metrics plots
+│   │   └── demo/             # Demo visualizations
+│   ├── dashboard.html        # Original dashboard
+│   └── dashboard_v2.html     # Premium dark dashboard
+├── config/                   # Configuration files
+├── docs/                     # Documentation
+├── requirements.txt          # Python dependencies
+├── .gitignore                # Git ignore rules
+├── REPORT.md                 # This report
+└── README.md                 # Project overview
 ```
 
 ---
 
-## 10. References
+## 11. References
 
 1. GLORYS12V1: Jean-Michel et al. (2021). "The Copernicus Marine Environment Analysis Service (CMEMS)" *Mercator Ocean J.*
 2. OSTIA: Donlon et al. (2012). "The Operational Sea Surface Temperature and Sea Ice Analysis (OSTIA) system."

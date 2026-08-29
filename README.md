@@ -1,94 +1,223 @@
 # OceanEmbed — Satellite Embedding-Based Reconstruction of Subsurface Ocean Temperature
 
-**Prototype for:** Ministry of Earth Sciences (MoES) / INCOIS Hackathon
-**Task:** Predict depth-wise subsurface ocean temperature from surface satellite observations only.
+**Prototype for:** Ministry of Earth Sciences (MoES) / INCOIS Hackathon  
+**Task:** Predict depth-wise subsurface ocean temperature from surface satellite observations only.  
+**Status:** ✅ Complete
 
 ---
 
-## 1. What we're building (30-second version)
+## 1. What We Built
 
-Satellites give us the **surface** ocean (temp, salinity, height, currents, winds).
-ARGO floats give us the **real temperature below the surface** — but only sparsely.
-We train an AI to look at the **surface** and **predict the temperature at 15 depths**
-(0, 5, 10, 20, 30, 50, 75, 100, 125, 150, 200, 300, 500, 700, 1000 m) across the
-**North Indian Ocean** (5N–30N, 45E–105E) at **0.25° daily** resolution.
-
----
-
-## 2. Data acquisition plan
-
-Everything you need, in the right order. **Do registrations FIRST — they need approval.**
-
-### Materials needed (all free, but require account registration)
-
-| # | What | Product (recommended) | Where to register/download | Your account status |
-|---|------|----------------------|----------------------------|---------------------|
-| 1 | **Subsurface temp (TRAINING TARGET)** | GLORYS12V1 reanalysis | [CMEMS register](https://data.marine.copernicus.eu/register) | ❌ need |
-| 2 | **Subsurface temp (EVAL - independent)** | Gridded ARGO | [INCOIS LAS](https://las.incois.gov.in) or [CMEMS ARGO](https://data.marine.copernicus.eu/product/INSITU_GLO_PHY_TS_DISCRETE_MY_013_001/) | ❌ need |
-| 3 | Sea Surface Temperature (SST) | OSTIA (0.05° daily) | [CMEMS SST](https://data.marine.copernicus.eu/product/SST_GLO_SST_L4_NRT_OBSERVATIONS_010_001/) | ❌ need |
-| 4 | Sea Surface Salinity (SSS) | SMAP (0.25° 8-day) | [NASA PODAAC](https://urs.earthdata.nasa.gov/users/new) + [SMAP](https://podaac.jpl.nasa.gov/dataset/SMAP_JPL_L3_SSS_CAP_8DAY-RUNNINGMEAN_V5) | ❌ need |
-| 5 | Sea Surface Height (SSH/SLA) | AVISO / CMEMS | [CMEMS SLA](https://data.marine.copernicus.eu/product/SEALEVEL_GLO_PHY_L4_MY_008_047/) | ❌ need |
-| 6 | Surface currents (U,V) | OSCAR (0.25° 5-day) | [NASA PODAAC](https://urs.earthdata.nasa.gov/users/new) + [OSCAR](https://podaac.jpl.nasa.gov/dataset/OSCAR_L4_OC_third-deg) | ❌ need |
-| 7 | Surface winds (U,V) | ERA5 (0.25° 6-hour) | [CDS register](https://cds.climate.copernicus.eu/user/register) | ❌ need |
-
-### What I'll set up to make download one command
-- `scripts/setup_env.sh` — installs Python + tools
-- `scripts/download_glorys.sh` — GLORYS (your training target)
-- (We'll add more once we confirm which products/platforms you can access)
+Satellites give us the **surface** ocean (temp, salinity, height, currents, winds).  
+ARGO floats give us the **real temperature below the surface** — but only sparsely.  
+We train an AI to look at the **surface** and **predict the temperature at 15 depths**  
+(2, 5, 10, 20, 30, 50, 75, 100, 125, 150, 200, 300, 500, 700, 1000 m) across the  
+**North Indian Ocean** (5°N–30°N, 45°E–105°E) at **0.25° daily** resolution.
 
 ---
 
-## 3. Recommended order of operations
+## 2. Results Summary
 
-```
-STEP 1  Register all accounts listed above (5 min each, ~30 min total).
-        ⚠️ Do this NOW - CMEMS/CDS approval can take hours-days.
-        Track your status in the table above.
+| Model | Avg RMSE (°C) | Avg Correlation | Parameters |
+|-------|:---:|:---:|---:|
+| **Linear** | **0.701** | 0.751 | 14.8M |
+| **CNN** | 0.769 | **0.808** | 654K |
+| Autoencoder | 0.968 | 0.461 | 145K |
+| **ViT (OceanEmbed)** | 0.917 | 0.340 | 943K |
+| Shallow CNN | 1.047 | 0.422 | 8K |
 
-STEP 2  Run scripts/setup_env.sh  →  installs Python 3.12 + PyTorch (uses your GPU)
+**Key finding:** Simple linear models are competitive — the surface-to-depth mapping is primarily a regression problem.
 
-STEP 3  Get GLORYS downloading first (it's your target & biggest dependency).
-        export CMEMS_USER=...; export CMEMS_PASS=...
-        bash scripts/download_glorys.sh 2023-01-01 2023-12-31
+---
 
-STEP 4  Download surface inputs (SST, SSH, currents, winds, SSS).
+## 3. Quick Start
 
-STEP 5  Download Gridded ARGO for independent validation.
+### Prerequisites
+- Python 3.12+ (conda environment recommended)
+- ~8GB disk space for data
+- Account registrations (CMEMS, NASA Earthdata, CDS)
 
-STEP 6  Run preprocessing to put everything on the 0.25° daily grid.
+### Installation
+```bash
+# Clone repo
+git clone <repo-url>
+cd Ps66
 
-STEP 7  Build & train the AI model.  (I'll write this)
+# Create conda environment
+conda create -n ocean python=3.12
+conda activate ocean
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
+### Download Data
+```bash
+# Set credentials
+export COPERNICUSMARINE_SERVICE_USERNAME="your@email.com"
+export COPERNICUSMARINE_SERVICE_PASSWORD="your_password"
+
+# Download GLORYS (training target)
+bash scripts/download_glorys_monthly.sh 2023
+
+# Download surface inputs
+bash scripts/download_surface.sh
+
+# Preprocess
+python scripts/preprocess_glorys.py
+python scripts/preprocess_surface.py
+```
+
+### Train Models
+```bash
+# Train ViT (OceanEmbed)
+python scripts/train.py 2023 30
+
+# Train baselines
+python scripts/train_baselines.py 2023
+
+# Generate comparison plots
+python scripts/comprehensive_eval.py
+```
+
+### View Dashboard
+```bash
+# Open in browser
+open notebooks/dashboard_v2.html
+```
+
 ---
 
-## 4. Progress tracking
-
-| Task | Status |
-|------|--------|
-| 1. Accounts registered | ❌ not yet |
-| 2. Python env setup | ❌ not yet |
-| 3. GLORYS downloaded | ❌ not yet |
-| 4. Surface inputs | ❌ not yet |
-| 5. ARGO eval data | ❌ not yet |
-| 6. Preprocessing grid | ❌ not yet |
-| 7. Model train + eval | ❌ not yet |
-
----
-
-## 5. Folder layout
+## 4. Project Structure
 
 ```
 Ps66/
-├── config/config.yaml        ← all settings (domain, depths, resolution, hyperparams)
 ├── scripts/
-│   ├── setup_env.sh          ← install Python + AI tools
-│   └── download_glorys.sh    ← download training target from CMEMS
+│   ├── model.py                  # OceanEmbed ViT model (943K params)
+│   ├── model_v2.py               # Improved model with depth embedding
+│   ├── baselines.py              # Linear, CNN, Autoencoder, Shallow
+│   ├── train.py                  # ViT training (V1)
+│   ├── train_v1_1.py             # Improved training (grad clip + warmup)
+│   ├── train_v2.py               # V2 training (depth-weighted loss)
+│   ├── train_baselines.py        # Baseline training
+│   ├── preprocess_glorys.py      # GLORYS preprocessing
+│   ├── preprocess_surface.py     # Surface inputs preprocessing
+│   ├── eval_plots.py             # Evaluation metrics plots
+│   ├── comprehensive_eval.py     # Full comparison plots
+│   ├── demo.py                   # Demo visualization
+│   ├── download_glorys.sh        # GLORYS download
+│   ├── download_glorys_monthly.sh # Monthly GLORYS download
+│   ├── download_surface.sh       # Surface data download
+│   └── setup_env.sh              # Environment setup
 ├── data/
-│   ├── raw/                  ← downloaded NetCDF files
-│   ├── processed/            ← regridded, harmonized 0.25° daily
-│   └── embedding/            ← latent satellite embeddings (model output)
-├── notebooks/                ← PoC exploration & demo
-├── models/                   ← trained weights
-└── logs/                     ← training/download logs
+│   ├── raw/
+│   │   ├── glorys/               # Raw GLORYS files (7.4GB)
+│   │   ├── surface/              # Raw satellite data
+│   │   │   ├── sst/              # OSTIA SST
+│   │   │   ├── ssh/              # AVISO SSH
+│   │   │   ├── sss/              # OISSS SSS
+│   │   │   ├── currents/         # OSCAR currents
+│   │   │   └── winds/            # ERA5 winds
+│   │   └── argo/                 # Argo validation data
+│   └── processed/
+│       ├── glorys_nio_2023_MM.nc # Preprocessed GLORYS (12 files)
+│       └── surface_inputs_2023_NIO.nc # 7-channel surface (248MB)
+├── models/
+│   ├── best_model.pt             # Best ViT checkpoint
+│   ├── best_model_v1.1.pt        # V1.1 improved checkpoint
+│   ├── baseline_linear.pt        # Linear model
+│   ├── baseline_cnn.pt           # CNN model
+│   ├── baseline_autoencoder.pt   # Autoencoder model
+│   └── baseline_shallow.pt       # Shallow CNN model
+├── logs/
+│   ├── metrics_2023.json         # V1 metrics
+│   ├── metrics_v1.1_2023.json    # V1.1 metrics
+│   ├── comparison_2023.json      # Full comparison results
+│   └── history_*.json            # Training histories
+├── notebooks/
+│   ├── plots/
+│   │   ├── comparison/           # Model comparison plots
+│   │   ├── evaluation/           # Evaluation metrics plots
+│   │   └── demo/                 # Demo visualizations
+│   ├── dashboard.html            # Original dashboard
+│   └── dashboard_v2.html         # Premium dark dashboard
+├── config/
+│   └── config.yaml               # Project configuration
+├── docs/
+│   └── DATA_ACQUISITION.md       # Data download guide
+├── requirements.txt              # Python dependencies
+├── .gitignore                    # Git ignore rules
+├── REPORT.md                     # Technical report
+└── README.md                     # This file
 ```
+
+---
+
+## 5. Data Sources
+
+| Dataset | Variable | Resolution | Source | Status |
+|---------|----------|------------|--------|--------|
+| GLORYS12V1 | Temperature (15 depths) | 0.083° daily | CMEMS | ✅ Downloaded |
+| OSTIA L4 | SST | 0.05° daily | CMEMS | ✅ Downloaded |
+| AVISO DUACS | SSH/SLA | 0.25° daily | CMEMS | ✅ Downloaded |
+| OISSS L4 | SSS | 0.25° 8-day | PODAAC | ✅ Downloaded |
+| OSCAR | Surface currents (U,V) | 0.25° monthly | PODAAC | ✅ Downloaded |
+| ERA5 | Surface winds (U,V) | 0.25° hourly→daily | CDS | ✅ Downloaded |
+| Argo | Independent validation | 1° monthly | Ifremer ERDDAP | ✅ Downloaded |
+
+---
+
+## 6. Model Architecture
+
+### OceanEmbed (ViT-based)
+```
+Surface Input (7×64×64)
+    → PatchEmbedding (Conv2d, patch_size=4)
+    → TransformerEncoder (4 layers, 4 heads, dim=128)
+    → Mean Pooling → Embedding (128-d)
+    → DepthDecoder (MLP: 128→256→256→15)
+    → Temperature Profile (15 depths)
+```
+
+### Input Channels (7)
+1. **SST** — Sea Surface Temperature (OSTIA)
+2. **SSS** — Sea Surface Salinity (OISSS)
+3. **SSH** — Sea Surface Height (AVISO)
+4. **Uc** — Ocean current U-component (OSCAR)
+5. **Vc** — Ocean current V-component (OSCAR)
+6. **Uw** — Wind U-component (ERA5)
+7. **Vw** — Wind V-component (ERA5)
+
+---
+
+## 7. Dashboard
+
+Open `notebooks/dashboard_v2.html` in your browser for an interactive visualization:
+
+- Model comparison cards (click to select)
+- Depth profile charts (RMSE & Correlation)
+- Bar charts for model comparison
+- Zone analysis (Surface, Thermocline, Deep)
+- Complexity vs Performance scatter
+- Detailed metrics table
+
+---
+
+## 8. Hardware Requirements
+
+- **Training:** CPU sufficient (~20s/epoch), GPU optional
+- **Storage:** ~15GB total (7.4GB GLORYS + 2GB surface + 1GB processed + models)
+- **RAM:** 8GB minimum, 16GB recommended
+- **Tested on:** RTX 4050 Laptop (6GB VRAM), 15GB RAM
+
+---
+
+## 9. License
+
+This project is for educational and research purposes.
+
+---
+
+## 10. Contact
+
+For questions about this project, contact the development team.
