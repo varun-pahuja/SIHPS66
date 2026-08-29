@@ -9,9 +9,12 @@ venv/
 .venv/
 
 # Data (large files - keep processed only)
+
 data/raw/glorys/
 data/raw/surface/
 data/raw/argo/*.csv
+data/raw/argo/*.nc        # ← add this
+data/processed/*.nc       # ← add this
 
 # Models
 models/*.pt
