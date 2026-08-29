@@ -9,12 +9,11 @@ venv/
 .venv/
 
 # Data (large files - keep processed only)
-
 data/raw/glorys/
 data/raw/surface/
 data/raw/argo/*.csv
-data/raw/argo/*.nc        # ← add this
-data/processed/*.nc       # ← add this
+data/raw/argo/*.nc
+data/processed/*.nc
 
 # Models
 models/*.pt
@@ -34,3 +33,16 @@ config/.earthdata
 # Environment
 .env
 *.log
+
+# Dashboard (Next.js)
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+dashboard/.npmrc
+# Node
+dashboard/node_modules/
+node_modules/
+
+# Data
+data/processed/*.nc
+data/raw/argo/*.nc
