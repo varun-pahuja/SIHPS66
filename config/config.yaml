@@ -1,0 +1,64 @@
+# OceanEmbed - Configuration file
+# All spatial/temporal settings and data source definitions live here.
+
+# Domain: North Indian Ocean (5N-30N, 45E-105E)
+domain:
+  lat_min: 5.0
+  lat_max: 30.0
+  lon_min: 45.0
+  lon_max: 105.0
+
+# Standard grid (target common resolution)
+grid:
+  spatial_res: 0.25   # degrees
+  temporal_res: daily # 1 sample per day
+  lat: [5.0, 30.0, 0.25]
+  lon: [45.0, 105.0, 0.25]
+
+# Standard depth levels (meters) - target for reconstruction
+depths:
+  - 0
+  - 5
+  - 10
+  - 20
+  - 30
+  - 50
+  - 75
+  - 100
+  - 125
+  - 150
+  - 200
+  - 300
+  - 500
+  - 700
+  - 1000
+
+# Surface input variables (channels to the model)
+surface_variables:
+  sst:   {product: OSTIA,        source: CEDA,    native_res: [0.05, daily]}
+  sss:   {product: SMAP,         source: PODAAC,  native_res: [0.25, 8day]}
+  ssh:   {product: AVISO/CMEMS,  source: CMEMS,   native_res: [0.25, daily]}
+  uv_cur: {product: OSCAR,       source: PODAAC,  native_res: [0.25, 5day]}
+  wspd_u: {product: ERA5,        source: ECMWF,   native_res: [0.25, 6hour]}
+  wspd_v: {product: ERA5,        source: ECMWF,   native_res: [0.25, 6hour]}
+
+# Target subsurface temperature products
+target_products:
+  training: {product: GLORYS12V1, source: CMEMS, variable: thetao, native_res: [0.083, daily]}
+  eval:     {product: Gridded ARGO, source: INCOIS/CMEMS, variable: temperature, native_res: [1.0, daily]}
+
+# Optional registration helper (credentials NOT stored here - use env vars)
+accounts_needed:
+  cmems:  "https://data.marine.copernicus.eu/register"
+  cds:    "https://cds.climate.copernicus.eu/user/register"
+  podaac: "https://urs.earthdata.nasa.gov/users/new"
+  argo:   "https://las.incois.gov.in"
+
+# Training hyperparameters (rough starting point for 6GB VRAM)
+training:
+  batch_size: 32
+  epochs: 50
+  lr: 0.001
+  patch_size: 16        # spatial window (pixels) fed to model
+  latent_dim: 128       # satellite embedding size
+  device: cuda

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Data (large files - keep processed only)
+data/raw/glorys/
+data/raw/surface/
+data/raw/argo/*.csv
+
+# Models
+models/*.pt
+
+# Logs
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Credentials
+config/.earthdata
+.cdsapirc
+.netrc
+
+# Environment
+.env
+*.log
