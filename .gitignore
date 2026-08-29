@@ -8,7 +8,7 @@ env/
 venv/
 .venv/
 
-# Data (large files - keep processed only)
+# Data (large files)
 data/raw/glorys/
 data/raw/surface/
 data/raw/argo/*.csv
@@ -39,10 +39,19 @@ dashboard/node_modules/
 dashboard/.next/
 dashboard/out/
 dashboard/.npmrc
+
 # Node
-dashboard/node_modules/
 node_modules/
 
-# Data
-data/processed/*.nc
-data/raw/argo/*.nc
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.npmrc
+dashboard/next-env.d.ts
