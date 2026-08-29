@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  Activity,
-  Zap,
-  Brain,
-  Cpu,
-  TrendingUp,
-  ArrowUpRight,
-} from "lucide-react";
-
 interface ModelInfo {
   name: string;
   description: string;
@@ -25,110 +16,113 @@ interface ModelCardsProps {
   onSelect: (key: string) => void;
 }
 
-const MODEL_ICONS: Record<string, React.ReactNode> = {
-  linear: <TrendingUp size={18} />,
-  cnn: <Activity size={18} />,
-  autoencoder: <Zap size={18} />,
-  vit: <Brain size={18} />,
-  shallow: <Cpu size={18} />,
-};
-
-const MODEL_COLORS: Record<string, string> = {
-  linear: "from-ocean-500 to-ocean-600",
-  cnn: "from-teal-500 to-teal-600",
-  autoencoder: "from-coral-400 to-coral-500",
-  vit: "from-amber-400 to-amber-500",
-  shallow: "from-warm-400 to-warm-500",
-};
-
 export function ModelCards({ models, selected, onSelect }: ModelCardsProps) {
   const modelEntries = Object.entries(models);
 
   return (
-    <section id="models" className="border-b border-warm-200/60 py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-warm-900">
+    <section id="models" className="border-b border-slate-200 bg-white py-20 lg:py-28">
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="mb-12 max-w-2xl">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
             Model Comparison
           </h2>
-          <p className="mt-3 text-warm-500">
+          <p className="mt-3 text-base text-slate-500">
             Five architectures evaluated on the same 2023 North Indian Ocean
             dataset.
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {modelEntries.map(([key, model]) => (
             <button
               key={key}
               onClick={() => onSelect(key)}
-              className={`group relative w-full rounded-2xl border p-6 text-left transition-all duration-300 ${
+              className={`group relative w-full rounded-xl border p-5 text-left transition-all duration-200 ${
                 selected === key
-                  ? "border-ocean-300 bg-gradient-to-br from-ocean-50 to-teal-50 shadow-xl shadow-ocean-500/10"
-                  : "border-warm-200/60 bg-white hover:border-ocean-200 hover:shadow-lg hover:shadow-ocean-500/5"
+                  ? "border-blue-200 bg-blue-50/50 ring-1 ring-blue-200"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
               <div className="mb-4 flex items-start justify-between">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${MODEL_COLORS[key]} text-white shadow-lg ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
                     selected === key
-                      ? "shadow-ocean-500/30"
-                      : "shadow-warm-500/10"
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
                   }`}
                 >
-                  {MODEL_ICONS[key]}
+                  {getModelIcon(key)}
                 </div>
-                <span className="font-mono text-xs text-warm-400">
+                <span className="font-mono text-xs text-slate-400">
                   {model.params}
                 </span>
               </div>
 
-              <h3 className="mb-2 text-lg font-bold text-warm-900">
+              <h3 className="mb-1 text-base font-semibold text-slate-900">
                 {model.name}
               </h3>
-              <p className="mb-5 text-sm leading-relaxed text-warm-500">
+              <p className="mb-4 text-sm leading-relaxed text-slate-500">
                 {model.description}
               </p>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl bg-warm-50/80 p-3">
-                  <div className="text-xs font-medium text-warm-400">RMSE</div>
-                  <div className="font-mono text-lg font-bold text-warm-900">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="text-xs text-slate-400">RMSE</div>
+                  <div className="font-mono text-sm font-medium text-slate-700">
                     {model.rmse.toFixed(3)}
-                    <span className="text-xs font-normal text-warm-400">
-                      {" "}
-                      °C
-                    </span>
+                    <span className="text-slate-400"> °C</span>
                   </div>
                 </div>
-                <div className="rounded-xl bg-warm-50/80 p-3">
-                  <div className="text-xs font-medium text-warm-400">
-                    Correlation
-                  </div>
-                  <div className="font-mono text-lg font-bold text-warm-900">
+                <div>
+                  <div className="text-xs text-slate-400">Correlation</div>
+                  <div className="font-mono text-sm font-medium text-slate-700">
                     {model.correlation.toFixed(3)}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-warm-100 pt-4">
-                <span className="text-xs text-warm-400">
-                  {model.inference} inference
-                </span>
-                <span className="text-xs font-medium text-warm-500">
-                  {model.bestFor}
-                </span>
+              <div className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-400">
+                {model.inference} inference · {model.bestFor}
               </div>
-
-              {selected === key && (
-                <div className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-ocean-500 text-white">
-                  <ArrowUpRight size={12} />
-                </div>
-              )}
             </button>
           ))}
         </div>
       </div>
     </section>
   );
+}
+
+function getModelIcon(key: string) {
+  const icons: Record<string, React.ReactNode> = {
+    linear: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 14L14 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+    cnn: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    ),
+    autoencoder: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 8L8 2L14 8L8 14L2 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      </svg>
+    ),
+    vit: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 2V5M8 11V14M2 8H5M11 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+    shallow: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 4H14M2 8H14M2 12H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  };
+  return icons[key] || icons.linear;
 }
